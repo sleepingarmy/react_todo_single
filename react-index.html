@@ -1,0 +1,123 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css" />
+  </head>
+  <body>
+    <div id='content' class='container'></div>
+    <script type="text/babel">
+      //React Code goes here
+
+      class List extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = { items: [], complete: 0, nexID: 0 };
+          this.addItem = this.addItem.bind(this);
+          this.items = this.items.bind(this);
+        }
+
+        items(){
+          let items = [];
+          this.state.items.map( item => {
+            items.push(<Item key={`item-${item.id}`} {...item}/>);
+          });
+          return items;
+        }
+
+        nextID(id){
+          return id += 1;
+        }
+
+        addItem(e){
+          e.preventDefault();
+          let items = this.state.items;
+          items.unshift({name: this.refs.name.value, complete: false, id: this.state.nextID });
+          this.refs.name.value = null;
+          this.setState({ items: items, nextID: this.nextID(this.state.nextID) });
+        }
+
+        render(){
+          return(<div className='center container'>
+                  <h1> TO DO </h1>
+                  <form onSubmit={this.addItem}>
+                    <input placeholder='put stuff here' type='text' ref='name' />
+                  </form>
+                  <hr />
+                  <div className='row'>
+                    {this.items()}
+                  </div>
+                </div>);
+        }
+      }
+
+      class Item extends React.Component{
+        constructor(props){
+          super(props);
+          this.state = { checked: false, style: {} };
+          this.toggleChecked = this.toggleChecked.bind(this);
+        }
+
+        toggleChecked(){
+          let complete = !this.state.checked;
+          let style = {};
+          if (complete) {
+            style = {
+              textDecoration: 'line-through',
+              color: 'grey'
+            };
+          }
+          this.setState({ checked: complete, style: style });
+        }
+
+        render(){
+          let id = `complete-${this.props.id}`;
+          let color = this.state.checked ? 'green-lighten-5' : 'grey lighten-5';
+          return(<div className={`${color} col s12`}>
+                  <div className = 'col m8' style={this.state.style}>
+                    {this.props.name}
+                  </div>
+                  <div className='col m3'>
+                    <input type='checkbox' id={id} defaultChecked={this.props.checked} onChange={this.toggleChecked}/>
+                    <label htmlFor={id}>Complete?</label>
+                  </div>
+                  <div className='col m1'>
+                    x
+                  </div>
+                </div>);
+        }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // this renders a component.  two arguments: which component, which element the component is bound to.
+      ReactDOM.render(<List />, document.getElementById('content'));
+    </script>
+  </body>
+</html>
+
+
+<!-- props are immutable and can be thought of as the initial state of the component -->
+<!-- state is the current state. whenever changed, component is rerendered -->
+<!-- destructuring: {...item} instead of name={item.name} complete={item.complete} id={item.id}  -->
+
+
